@@ -63,6 +63,7 @@ export class Scanner {
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.xr.enabled = true;
+    renderer.localClippingEnabled = true;
     renderer.xr.setReferenceSpaceType('local');
     this.renderer = renderer;
     this.scene = new THREE.Scene();
@@ -102,7 +103,10 @@ export class Scanner {
     geo.setAttribute('position', new THREE.BufferAttribute(this.dispPos, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(this.dispCol, 3));
     geo.setDrawRange(0, 0);
-    this.points = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.003, vertexColors: true, sizeAttenuation: true }));
+    // The dots are cut by a vertical plane through the pot's axis that always faces the
+    // phone, so only the far half is drawn and you look straight into the cross-section.
+    this.clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
+    this.points = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.003, vertexColors: true, sizeAttenuation: true, clippingPlanes: [this.clipPlane] }));
     this.points.frustumCulled = false;
     this.potGroup.add(this.points);
 
@@ -212,6 +216,7 @@ export class Scanner {
         if (ap) this.worldFromPot = Float32Array.from(ap.transform.matrix);
       }
       this.potGroup.matrix.fromArray(this.worldFromPot);
+      this._updateSlice(view);
       if (depth && !this.paused && !this.scan.full && time - this.lastCapTime > 100 && this._moved(view)) {
         this._capture(view, depth);
         this.lastCapTime = time;
@@ -225,6 +230,25 @@ export class Scanner {
       }
     }
     this.renderer.render(this.scene, this.camera);
+  }
+
+  _updateSlice(view) {
+    const m = this.worldFromPot, g = this.live?.geom;
+    const ax = g ? g.cx : 0, ay = g ? g.h0 : 0, az = g ? g.cz : 0;
+    // axis point and up direction in world space
+    const Ax = m[0] * ax + m[4] * ay + m[8] * az + m[12];
+    const Ay = m[1] * ax + m[5] * ay + m[9] * az + m[13];
+    const Az = m[2] * ax + m[6] * ay + m[10] * az + m[14];
+    const ux = m[4], uy = m[5], uz = m[6];
+    const c = view.transform.position;
+    let dx = c.x - Ax, dy = c.y - Ay, dz = c.z - Az;
+    const along = dx * ux + dy * uy + dz * uz;
+    dx -= along * ux; dy -= along * uy; dz -= along * uz;
+    const len = Math.hypot(dx, dy, dz);
+    if (len < 0.02) return; // directly overhead: keep the last slice direction
+    // keep the side facing away from the phone
+    this.clipPlane.normal.set(-dx / len, -dy / len, -dz / len);
+    this.clipPlane.constant = (dx * Ax + dy * Ay + dz * Az) / len;
   }
 
   // Skip frames from an almost stationary phone: they add correlated error, not information.
