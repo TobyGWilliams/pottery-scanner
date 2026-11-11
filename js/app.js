@@ -2,6 +2,7 @@ import { analyse } from './analysis.js';
 import { Scanner, arSupport } from './scanner.js';
 import { ResultsView, drawPreview } from './results.js';
 import { demoPot, synthScan } from './synth.js';
+import { VERSION } from './version.js';
 
 const $ = (id) => document.getElementById(id);
 const STORE = 'pot-scan-last';
@@ -129,6 +130,7 @@ $('export').addEventListener('click', () => {
   URL.revokeObjectURL(a.href);
 });
 
+$('version').textContent = VERSION;
 $('last').hidden = !load();
 arSupport().then((s) => {
   $('start').disabled = !s.ok;

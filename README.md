@@ -49,6 +49,8 @@ foot ring or hollowed base is read as solid.
 
 ## Development
 
+- Run `npm run stamp` before each commit. It writes a build number and time to
+  `js/version.js`, shown at the bottom of the homepage.
 - `npm test` runs the analysis against a ray-cast synthetic pot with depth noise.
 - Open `/?demo` in any browser to see the results page with that synthetic scan.
 - The AR capture path (`js/scanner.js`) can only be exercised on a real device.
