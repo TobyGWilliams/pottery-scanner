@@ -165,7 +165,18 @@ export class Scanner {
     this.on.ended(scan);
   }
 
+  // An exception inside an XR frame callback stops the loop and freezes the camera
+  // feed, so report it on screen and keep going.
   _frame(time, frame) {
+    try {
+      this._frameInner(time, frame);
+    } catch (e) {
+      this.on.status('Scanner error: ' + (e && e.message ? e.message : e));
+      console.error(e);
+    }
+  }
+
+  _frameInner(time, frame) {
     if (!frame) return;
     const ref = this.renderer.xr.getReferenceSpace();
     const pose = frame.getViewerPose(ref);

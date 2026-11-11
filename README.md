@@ -52,3 +52,10 @@ foot ring or hollowed base is read as solid.
 - `npm test` runs the analysis against a ray-cast synthetic pot with depth noise.
 - Open `/?demo` in any browser to see the results page with that synthetic scan.
 - The AR capture path (`js/scanner.js`) can only be exercised on a real device.
+
+## Vendored three.js
+
+`vendor/three.module.min.js` is three r169 with one local patch: its XR frame loop only
+asks for GPU depth when a GPU depth binding exists. Unpatched, it throws on every frame of
+a CPU-depth AR session on Android, which freezes the camera feed. Re-apply (or use a release
+that includes the upstream fix) if you upgrade three.
