@@ -1,0 +1,16 @@
+{
+  "name": "pottery-scanner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scan a wheel-thrown pot with an Android phone's browser (WebXR depth) and map its wall thickness.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "start": "npx --yes serve -l 8080 .",
+    "tunnel": "node scripts/tunnel.mjs"
+  },
+  "devDependencies": {
+    "localtunnel": "^2.0.2",
+    "qrcode-terminal": "^0.12.0"
+  }
+}

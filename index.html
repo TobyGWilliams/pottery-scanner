@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbfaf7">
+  <title>Pot Wall Scanner</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="home">
+    <h1>Pot Wall Scanner</h1>
+    <p class="lede">Scan a wheel-thrown bowl, mug or cylinder with your phone and see where the walls are thick and thin.</p>
+    <ol class="steps">
+      <li>Put the pot on a clear table with about 20&nbsp;cm of space around it. A patterned cloth or newspaper under it helps the phone track.</li>
+      <li>Look straight down into the pot and mark its centre.</li>
+      <li>Walk the phone once round the outside, 30–40&nbsp;cm away, then look down into the pot from every side.</li>
+    </ol>
+    <button id="start" class="primary" disabled>Start scan</button>
+    <p id="support" class="hint" role="status">Checking this phone…</p>
+    <div class="row">
+      <button id="demo" class="quiet">See an example result</button>
+      <button id="last" class="quiet" hidden>Open last scan</button>
+    </div>
+    <p class="fine">Everything runs in this browser. No images or scans leave your phone.</p>
+  </main>
+
+  <main id="busy" hidden>
+    <p class="lede" id="busy-text">Working out the thickness…</p>
+  </main>
+
+  <main id="results" hidden>
+    <header class="bar">
+      <h1>Wall thickness</h1>
+      <button id="again" class="quiet">New scan</button>
+    </header>
+    <div id="stats" class="tiles"></div>
+
+    <section>
+      <h2>Cross-section</h2>
+      <div id="legend" class="legend"></div>
+      <div class="canvas-wrap"><canvas id="section"></canvas></div>
+      <p id="readout" class="readout" role="status"></p>
+    </section>
+
+    <section>
+      <h2>Thickness along the inside (mm)</h2>
+      <div class="canvas-wrap"><canvas id="chart"></canvas></div>
+    </section>
+
+    <section>
+      <h2>Cutaway</h2>
+      <div class="canvas-wrap"><canvas id="view3d"></canvas></div>
+      <p class="fine">Drag to turn.</p>
+    </section>
+
+    <section>
+      <h2>Anchor the scale</h2>
+      <p class="fine">Phone depth can be off by a constant amount. If you measure the rim with calipers, enter it here and every reading shifts to match.</p>
+      <div class="row">
+        <label for="rim">Rim thickness (mm)</label>
+        <input id="rim" type="number" inputmode="decimal" min="0" max="40" step="0.1" placeholder="e.g. 5">
+        <button id="rim-clear" class="quiet">Clear</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>About this scan</h2>
+      <ul id="notes" class="notes"></ul>
+      <button id="export" class="quiet">Download data (JSON)</button>
+    </section>
+  </main>
+
+  <div id="overlay">
+    <div class="ov-top">
+      <p id="ov-status" role="status"></p>
+      <button id="ov-cancel" class="ov-x" aria-label="Cancel scan">✕</button>
+    </div>
+    <div class="ov-mid" id="ov-live" hidden>
+      <canvas id="ov-preview"></canvas>
+      <div class="chips">
+        <span class="chip"><i class="sw out"></i>Outside <b id="ov-out">0%</b></span>
+        <span class="chip"><i class="sw in"></i>Inside <b id="ov-in">0%</b></span>
+        <span class="chip"><b id="ov-n">0</b> points</span>
+      </div>
+    </div>
+    <div class="ov-bottom">
+      <button id="ov-place" class="primary">Place centre</button>
+      <button id="ov-restart" class="ghost" hidden>Re-place</button>
+      <button id="ov-finish" class="primary" hidden>Finish</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
